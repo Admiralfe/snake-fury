@@ -1,7 +1,7 @@
 {-|
 This module defines the logic of the game and the communication with the `Board.RenderState`
 -}
-module GameState where 
+module GameState where
 
 -- These are all the import. Feel free to use more if needed.
 import RenderState (BoardInfo (..), Point, DeltaBoard)
@@ -15,12 +15,12 @@ import Data.Maybe (isJust)
 data Movement = North | South | East | West deriving (Show, Eq)
 
 -- | The snakeSeq is a non-empty sequence. It is important to use precise types in Haskell
---   In first sight we'd define the snake as a sequence, but If you think carefully, an empty 
+--   In first sight we'd define the snake as a sequence, but If you think carefully, an empty
 --   sequence can't represent a valid Snake, therefore we must use a non empty one.
---   You should investigate about Seq type in haskell and we it is a good option for our porpouse.
+--   You should investigate about Seq type in haskell and we it is a good option for our purpose.
 data SnakeSeq = SnakeSeq {snakeHead :: Point, snakeBody :: Seq Point} deriving (Show, Eq)
 
--- | The GameState represents all important bits in the game. The Snake, The apple, the current direction of movement and 
+-- | The GameState represents all important bits in the game. The Snake, The apple, the current direction of movement and
 --   a random seed to calculate the next random apple.
 data GameState = GameState
   { snakeSeq :: SnakeSeq
@@ -31,8 +31,11 @@ data GameState = GameState
   deriving (Show, Eq)
 
 -- | This function should calculate the opposite movement.
-opositeMovement :: Movement -> Movement
-opositeMovement = undefined
+oppositeMovement :: Movement -> Movement
+oppositeMovement North = South
+oppositeMovement South = North
+oppositeMovement East = West
+oppositeMovement West = East
 
 -- >>> opositeMovement North == South
 -- >>> opositeMovement South == North
@@ -41,10 +44,13 @@ opositeMovement = undefined
 
 
 -- | Purely creates a random point within the board limits
---   You should take a look to System.Random documentation. 
+--   You should take a look to System.Random documentation.
 --   Also, in the import list you have all relevant functions.
 makeRandomPoint :: BoardInfo -> StdGen -> (Point, StdGen)
-makeRandomPoint = undefined
+makeRandomPoint board gen =
+    let (x, gen1) = uniformR (0 :: Int, width board) gen
+        (y, gen2) = uniformR (0 :: Int, height board) gen1
+    in ((x, y), gen2)
 
 {-
 We can't test makeRandomPoint, because different implementation may lead to different valid result.
@@ -66,7 +72,7 @@ False
 -- >>> inSnake (1,2) snake_seq
 -- >>> inSnake (1,4) snake_seq
 
--- | Calculates de new head of the snake. Considering it is moving in the current direction
+-- | Calculates the new head of the snake. Considering it is moving in the current direction
 --   Take into acount the edges of the board
 nextHead :: BoardInfo -> GameState -> Point
 nextHead = undefined
@@ -116,7 +122,6 @@ move :: BoardInfo -> GameState -> (Board.RenderMessage , GameState)
 move = undefined
 
 {- This is a test for move. It should return
-
 RenderBoard [((1,4),SnakeHead),((1,1),Snake),((1,3),Empty)]
 RenderBoard [((2,1),SnakeHead),((1,1),Snake),((3,1),Apple)] ** your Apple might be different from mine
 RenderBoard [((4,1),SnakeHead),((1,1),Snake),((1,3),Empty)]
